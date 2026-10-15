@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="SentinelGuard — Multi-Phase System Design & Security Pipeline Control Center">
+  <title>SentinelGuard | Architecture & Security Pipeline</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-background"></div>
+
+  <!-- Header -->
+  <header class="navbar">
+    <div class="nav-brand">
+      <div class="logo-shield">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          <path d="m9 12 2 2 4-4"/>
+        </svg>
+      </div>
+      <div>
+        <h1 class="brand-title">SentinelGuard</h1>
+        <span class="brand-subtitle">System Design & Security Analysis Pipeline</span>
+      </div>
+    </div>
+    
+    <div class="nav-actions">
+      <div class="status-indicator">
+        <span class="pulse-dot"></span>
+        <span id="system-status-text">Engine Ready</span>
+      </div>
+      <button id="quick-run-all-btn" class="btn btn-primary" title="Execute all 10 analysis phases end-to-end">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polygon points="5 3 19 12 5 21 5 3"></polygon>
+        </svg>
+        <span>Run Full Pipeline</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="main-container">
+    <!-- Controls Section -->
+    <section class="card config-card">
+      <div class="card-header">
+        <h2 class="section-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+          Execution Parameters
+        </h2>
+        <div class="quick-chips">
+          <span class="chip-label">Quick Source:</span>
+          <button class="chip" data-source=".">Current Repo (.)</button>
+          <button class="chip" data-source="tests/">Tests Folder (tests/)</button>
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group form-group-source">
+          <label for="source-input">Target Repository / Source Path</label>
+          <div class="input-wrapper">
+            <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+            </svg>
+            <input type="text" id="source-input" value="." placeholder="e.g. . or /path/to/repo or https://github.com/org/repo.git" autocomplete="off" spellcheck="false">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="source-type-select">Source Type</label>
+          <select id="source-type-select">
+            <option value="">Auto-Detect</option>
+            <option value="dir">Local Directory (dir)</option>
+            <option value="zip">ZIP Archive (zip)</option>
+            <option value="github">Remote Git URL (github)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="phase-select">Target Phase</label>
+          <select id="phase-select">
+            <option value="all">Full Pipeline (All Phases 0 to 9)</option>
+            <option value="0">Phase 0: Ingestion & Inventory</option>
+            <option value="1">Phase 1: Project Reconstruction</option>
+            <option value="2">Phase 2: Requirements & STRIDE</option>
+            <option value="3a">Phase 3A: Red Team Security Analysis</option>
+            <option value="4a">Phase 4A: Blue Team Defensive Analysis</option>
+            <option value="5a">Phase 5A: Security Retest</option>
+            <option value="6">Phase 6: Code Smell Analysis</option>
+            <option value="7">Phase 7: Cross-Domain Analysis</option>
+            <option value="8">Phase 8: Recommendation Engine</option>
+            <option value="9">Phase 9: Final Report (Markdown / JSON)</option>
+          </select>
+        </div>
+
+        <div class="form-group form-actions">
+          <button id="run-pipeline-btn" class="btn btn-primary btn-lg">
+            <span class="btn-spinner" id="btn-spinner"></span>
+            <svg id="btn-run-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg>
+            <span id="btn-run-text">Execute Analysis</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Phase Stepper Pipeline -->
+    <section class="pipeline-stepper-card">
+      <div class="stepper-header">
+        <h3 class="stepper-title">Analysis Pipeline Flow</h3>
+        <span class="stepper-hint">Click any completed phase to inspect its findings</span>
+      </div>
+      <div class="stepper-track" id="stepper-track">
+        <div class="step-node active" data-phase="0" id="step-0">
+          <div class="node-circle">0</div>
+          <div class="node-info">
+            <span class="node-title">Ingestion</span>
+            <span class="node-status">Ready</span>
+          </div>
+        </div>
+        <div class="step-connector"></div>
+
+        <div class="step-node" data-phase="1" id="step-1">
+          <div class="node-circle">1</div>
+          <div class="node-info">
+            <span class="node-title">Reconstruction</span>
+            <span class="node-status">Ready</span>
+          </div>
+        </div>
+        <div class="step-connector"></div>
+
+        <div class="step-node" data-phase="2" id="step-2">
+          <div class="node-circle">2</div>
+          <div class="node-info">
+            <span class="node-title">Requirements</span>
+            <span class="node-status">Ready</span>
+          </div>
+        </div>
+        <div class="step-connector"></div>
+
+        <div class="step-node" data-phase="3a" id="step-3a">
+          <div class="node-circle">3A</div>
+          <div class="node-info">
+            <span class="node-title">Red Team</span>
+            <span class="node-status">Ready</span>
+          </div>
+        </div>
+        <div class="step-connector"></div>
+
+        <div class="step-node" data-phase="4a" id="step-4a">
+          <div class="node-circle">4A</div>
+          <div class="node-info">
+            <span class="node-title">Blue Team</span>
+            <span class="node-status">Ready</span>
+          </div>
+        </div>
+        <div class="step-connector"></div>
+
+        <div class="step-node" data-phase="5a" id="step-5a">
+          <div class="node-circle">5A</div>
+          <div class="node-info">
+            <span class="node-title">Retest</span>
+            <span class="node-status">Ready</span>
+          </div>
+        </div>
+        <div class="step-connector"></div>
+
+        <div class="step-node" data-phase="6" id="step-6">
+          <div class="node-circle">6</div>
+          <div class="node-info">
+            <span class="node-title">Code Smells</span>
+            <span class="node-status">Ready</span>
+          </div>
+        </div>
+        <div class="step-connector"></div>
+
+        <div class="step-node" data-phase="7" id="step-7">
+          <div class="node-circle">7</div>
+          <div class="node-info">
+            <span class="node-title">Cross-Domain</span>
+            <span class="node-status">Ready</span>
+          </div>
+        </div>
+        <div class="step-connector"></div>
+
+        <div class="step-node" data-phase="8" id="step-8">
+          <div class="node-circle">8</div>
+          <div class="node-info">
+            <span class="node-title">Recommendations</span>
+            <span class="node-status">Ready</span>
+          </div>
+        </div>
+        <div class="step-connector"></div>
+
+        <div class="step-node" data-phase="9" id="step-9">
+          <div class="node-circle">9</div>
+          <div class="node-info">
+            <span class="node-title">Final Report</span>
+            <span class="node-status">Ready</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- KPI Metrics Row -->
+    <section class="kpi-grid" id="kpi-grid">
+      <div class="kpi-card kpi-score-card">
+        <div class="kpi-icon icon-score" id="kpi-score-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            <path d="m9 12 2 2 4-4"/>
+          </svg>
+        </div>
+        <div class="kpi-content">
+          <div class="kpi-score-header">
+            <span class="kpi-value score-text" id="kpi-score">-</span>
+            <span class="kpi-badge" id="kpi-risk-tier">Pending</span>
+          </div>
+          <span class="kpi-label">Security Posture Score</span>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-icon icon-blue">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        </div>
+        <div class="kpi-content">
+          <span class="kpi-value" id="kpi-files">-</span>
+          <span class="kpi-label">Audited Source Files</span>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-icon icon-purple">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        </div>
+        <div class="kpi-content">
+          <span class="kpi-value" id="kpi-components">-</span>
+          <span class="kpi-label">Architectural Components</span>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-icon icon-rose">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        </div>
+        <div class="kpi-content">
+          <span class="kpi-value" id="kpi-vulnerabilities">-</span>
+          <span class="kpi-label">Red Team Findings</span>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-icon icon-retest">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        </div>
+        <div class="kpi-content">
+          <span class="kpi-value" id="kpi-retest">-</span>
+          <span class="kpi-label">Remediation Status</span>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-icon icon-amber">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+        </div>
+        <div class="kpi-content">
+          <span class="kpi-value" id="kpi-smells">-</span>
+          <span class="kpi-label">Code Quality Smells</span>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-icon icon-cyan">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 4.24 4.24"/><path d="m14.83 9.17 4.24-4.24"/><path d="m14.83 14.83 4.24 4.24"/><path d="m9.17 14.83-4.24 4.24"/></svg>
+        </div>
+        <div class="kpi-content">
+          <span class="kpi-value" id="kpi-recommendations">-</span>
+          <span class="kpi-label">Actionable Recommendations</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Results Display Panel -->
+    <section class="card results-card">
+      <div class="results-header">
+        <div class="tabs" id="view-tabs">
+          <button class="tab-btn active" data-tab="phase-view">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+            Phase Deep-Dive
+          </button>
+          <button class="tab-btn" data-tab="arch-view">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"/><rect x="2" y="14" width="20" height="8" rx="2" ry="2"/><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line></svg>
+            Architecture &amp; STRIDE Map
+          </button>
+          <button class="tab-btn" data-tab="report-view">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            Phase 9 Report (Markdown)
+          </button>
+          <button class="tab-btn" data-tab="json-view">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            Raw JSON Explorer
+          </button>
+        </div>
+
+        <div class="results-actions">
+          <button id="print-btn" class="btn btn-secondary btn-sm" title="Print or save as PDF">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+            <span>Print Report</span>
+          </button>
+          <button id="copy-btn" class="btn btn-secondary btn-sm" title="Copy current view to clipboard">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            <span>Copy</span>
+          </button>
+          <button id="download-btn" class="btn btn-secondary btn-sm" title="Download output artifact">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            <span>Download</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Tab Content: Phase Deep-Dive View -->
+      <div class="tab-panel active" id="panel-phase-view">
+        <div class="phase-view-controls">
+          <span class="active-phase-tag" id="active-phase-badge">Phase: All Pipeline Output</span>
+          <div class="phase-selector-pills" id="phase-pills">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+
+        <div class="phase-filter-bar">
+          <div class="search-wrapper">
+            <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <input type="text" id="phase-search-input" placeholder="Quick search in current phase findings..." spellcheck="false">
+          </div>
+          <div class="filter-chips" id="filter-chips">
+            <button class="filter-chip active" data-filter="all">All Items</button>
+            <button class="filter-chip" data-filter="critical-high">Critical &amp; High</button>
+            <button class="filter-chip" data-filter="remediated">Remediated</button>
+            <button class="filter-chip" data-filter="recommendations">Recommendations</button>
+          </div>
+        </div>
+
+        <div class="phase-content-container" id="phase-content-container">
+          <div class="empty-state">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+            <h3>Ready to Run Architecture & Security Audit</h3>
+            <p>Click "Execute Analysis" or "Run Full Pipeline" above to inspect the repository across all 10 security and engineering phases.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab Content: Architecture & STRIDE Map -->
+      <div class="tab-panel" id="panel-arch-view">
+        <div class="arch-container" id="arch-container">
+          <div class="empty-state">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect><rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+            </svg>
+            <h3>Architecture Map Available After Analysis</h3>
+            <p>Execute the pipeline to generate interactive diagrams of components, STRIDE threat boundaries, and data flow pipelines.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab Content: Phase 9 Rendered Report View -->
+      <div class="tab-panel" id="panel-report-view">
+        <div class="markdown-preview" id="markdown-container">
+          <div class="empty-state">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            </svg>
+            <h3>Final Report Not Yet Generated</h3>
+            <p>Run Phase 9 or the Full Pipeline to view the audit-grade architectural and security report.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab Content: JSON View -->
+      <div class="tab-panel" id="panel-json-view">
+        <div class="json-viewer-header">
+          <input type="text" id="json-search" placeholder="Search JSON keys and values..." spellcheck="false">
+        </div>
+        <pre class="code-block" id="json-pre"><code>// Pipeline JSON output will appear here after execution</code></pre>
+      </div>
+    </section>
+
+    <!-- Execution Logs Drawer -->
+    <section class="card log-card">
+      <div class="log-header">
+        <div class="log-title">
+          <span class="log-indicator"></span>
+          <span>Pipeline Diagnostic Console</span>
+        </div>
+        <button id="clear-log-btn" class="btn-text">Clear Console</button>
+      </div>
+      <div class="console-box" id="console-output">
+        <div class="log-line info">[INIT] SentinelGuard Pipeline Control Center initialized. Ready for execution.</div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>SentinelGuard Software Architecture & Defensive Security Pipeline • Pure Python 3 • Zero External Dependencies</p>
+  </footer>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
