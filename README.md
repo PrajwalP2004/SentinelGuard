@@ -1,6 +1,6 @@
 # Multi-Phase System Design & Security Pipeline
 
-An automated multi-phase software engineering and defensive security pipeline.
+SentinelGuard is an automated repository security and code quality analysis tool that uses a multi-phase agent-based architecture to analyze software projects, detect vulnerabilities, identify code smells, verify security fixes, and generate prioritized recommendations with comprehensive audit reports in JSON and Markdown.
 
 ---
 
