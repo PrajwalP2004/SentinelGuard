@@ -297,24 +297,28 @@ document.addEventListener("DOMContentLoaded", () => {
   function updateKPIs(data, phase) {
     let p0 = data.phase0_inventory || (phase === "0" ? data : null);
     let p1 = data.phase1_reconstruction || (phase === "1" ? data : null);
-    let p2Sec = data.phase2_security_assessment || (phase === "2" && data.score !== undefined ? data : null);
+    let p2Sec = data.phase2_security_assessment || (phase === "2" ? data : null);
     let p3a = data.phase3a_red_team || (phase === "3a" ? data : null);
     let p5a = data.phase5a_security_retest || (phase === "5a" ? data : null);
     let p6 = data.phase6_code_smells || (phase === "6" ? data : null);
     let p8 = data.phase8_recommendations || (phase === "8" ? data : null);
 
     // Score & Risk Tier
-    if (p2Sec && p2Sec.score !== undefined) {
-      kpiScore.textContent = `${p2Sec.score}/100`;
-      kpiRiskTier.textContent = p2Sec.risk_tier ? p2Sec.risk_tier.split(" ")[0] : "Assessed";
+    const secSummary = p2Sec ? (p2Sec.assessment_summary || p2Sec) : null;
+    const secScore = secSummary ? (secSummary.security_health_score !== undefined ? secSummary.security_health_score : secSummary.score) : undefined;
+    const secRiskTier = secSummary ? (secSummary.risk_tier || "Assessed") : "Pending";
+
+    if (secScore !== undefined) {
+      kpiScore.textContent = `${secScore}/100`;
+      kpiRiskTier.textContent = secRiskTier ? secRiskTier.split(" ")[0] : "Assessed";
       kpiRiskTier.className = "kpi-badge";
-      if (p2Sec.score >= 90) kpiRiskTier.classList.add("badge-low-risk");
-      else if (p2Sec.score >= 70) kpiRiskTier.classList.add("badge-mod-risk");
+      if (secScore >= 90) kpiRiskTier.classList.add("badge-low-risk");
+      else if (secScore >= 70) kpiRiskTier.classList.add("badge-mod-risk");
       else kpiRiskTier.classList.add("badge-high-risk");
     } else {
-      kpiScore.textContent = "85/100";
-      kpiRiskTier.textContent = "MODERATE";
-      kpiRiskTier.className = "kpi-badge badge-mod-risk";
+      kpiScore.textContent = "-";
+      kpiRiskTier.textContent = "Pending";
+      kpiRiskTier.className = "kpi-badge";
     }
 
     if (p0 && (p0.source_files || p0.total_files)) {
@@ -424,7 +428,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (phase === "all" || phase === "2") {
       const p2Req = data.phase2_requirements || (Array.isArray(data) ? data : []);
-      const p2Sec = data.phase2_security_assessment || (data.score !== undefined ? data : null);
+      const p2Sec = data.phase2_security_assessment || ((data.assessment_summary || data.score !== undefined) ? data : null);
       if (p2Req.length > 0 || p2Sec) {
         html += renderPhase2Cards(p2Req, p2Sec);
       }
@@ -561,21 +565,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function renderPhase2Cards(p2Req, p2Sec) {
     let html = "";
-    if (p2Sec && p2Sec.score !== undefined) {
-      let strideBadges = Object.entries(p2Sec.stride_summary || {})
+    const secSummary = p2Sec ? (p2Sec.assessment_summary || p2Sec) : null;
+    const secScore = secSummary ? (secSummary.security_health_score !== undefined ? secSummary.security_health_score : secSummary.score) : undefined;
+    const secRiskTier = secSummary ? (secSummary.risk_tier || "Assessed") : "";
+    const strideSummary = secSummary ? (secSummary.stride_summary || {}) : {};
+
+    if (secScore !== undefined) {
+      let strideBadges = Object.entries(strideSummary)
         .map(([k, v]) => `<code>${k}: ${v}</code>`)
         .join(" ");
 
-      if (matchesFilterAndSearch(strideBadges + " " + p2Sec.risk_tier, "STRIDE Threat Model", p2Sec.risk_tier)) {
+      if (matchesFilterAndSearch(strideBadges + " " + secRiskTier, "STRIDE Threat Model", secRiskTier)) {
         html += `
           <div class="data-card" style="border-left: 3px solid var(--accent-primary);">
             <div class="data-card-header">
               <span class="data-card-title">Phase 2: Security Assessment &amp; Threat Model</span>
-              <span class="badge badge-${p2Sec.score >= 90 ? 'brand' : (p2Sec.score >= 70 ? 'medium' : 'high')}">Score: ${p2Sec.score}/100</span>
+              <span class="badge badge-${secScore >= 90 ? 'brand' : (secScore >= 70 ? 'medium' : 'high')}">Score: ${secScore}/100</span>
             </div>
             <div class="detail-row">
               <span class="detail-key">Resilience Risk Tier</span>
-              <span class="detail-val"><strong>${p2Sec.risk_tier}</strong></span>
+              <span class="detail-val"><strong>${secRiskTier}</strong></span>
             </div>
             <div class="detail-row">
               <span class="detail-key">STRIDE Threat Distribution</span>
