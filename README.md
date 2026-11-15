@@ -1,12 +1,27 @@
-# Multi-Phase System Design & Security Pipeline
+# 🛡️ SentinelGuard — Multi-Phase System Design & Security Pipeline
 
-SentinelGuard is an automated repository security and code quality analysis tool that uses a multi-phase agent-based architecture to analyze software projects, detect vulnerabilities, identify code smells, verify security fixes, and generate prioritized recommendations with comprehensive audit reports in JSON and Markdown.
+![Python](https://img.shields.io/badge/Python-3.10%2B-blue?logo=python&logoColor=white)
+![Dependencies](https://img.shields.io/badge/Dependencies-Zero%20(Stdlib%20Only)-brightgreen)
+![Architecture](https://img.shields.io/badge/Pipeline-10--Phase%20Agentic-orange)
+![Tests](https://img.shields.io/badge/Unit%20Tests-378%20Tests-success)
+
+**SentinelGuard** is an automated repository security and code quality analysis tool that uses a deterministic **10-phase agent-based architecture**—built strictly on the Python 3 standard library with **zero external dependencies**—to analyze software projects, detect vulnerabilities, identify code smells, statically verify security fixes, and generate prioritized recommendations with comprehensive audit reports in **JSON** and **Markdown**.
+
+---
+
+## ✨ Key Highlights
+
+* **Zero External Dependencies:** Implemented 100% with Python's built-in standard library (`ast`, `re`, `zipfile`, `http.server`, `subprocess`, `json`)—no `pip install`, external databases, or cloud LLM APIs required, ensuring full source-code privacy and zero supply-chain risk.
+* **Hardened Repository Ingestion:** Protects the host system against **Zip-Slip** path traversal, **decompression bombs** (size, compression ratio, and file count limits), and **Git CLI option injection**.
+* **Closed-Loop Security Auditing:** Pairs offensive vulnerability discovery (**Red Team**) with root-cause remediation plans (**Blue Team**) and automated static verification (**Security Retest**).
+* **Cross-Domain Risk Correlation:** Connects maintainability defects (such as silent exception handling or deep nesting) to security blind spots and scalability bottlenecks.
+* **Epistemic Rigor:** Every statement in the final audit report is explicitly classified (`FACT`, `INFERENCE`, `ANALYSIS`, `RECOMMENDATION`, `UNKNOWN`) to distinguish verified code facts from heuristic inferences.
 
 ---
 
 ## 🧭 Pipeline Architecture
 
-```plaintext
+```text
                    ┌────────────────────────────────────────┐
                    │   Input: GitHub URL / ZIP / Directory  │
                    └───────────────────┬────────────────────┘
@@ -94,19 +109,54 @@ SentinelGuard is an automated repository security and code quality analysis tool
 
 ---
 
-## 🚀 Execution Commands
+## ⚙️ Prerequisites & Setup
 
+* **Python:** Python 3.10 or higher (Python 3.12 recommended)
+* **Git CLI:** Required only when scanning remote GitHub repository URLs
+* **Third-Party Packages:** None (`0` external dependencies)
+
+```bash
+git clone <your-repository-url>
+cd SentinelGuard
+```
+
+---
+
+## 🖥️ Web Dashboard
+
+Launch the local interactive dashboard to run scans, track phase-by-phase progress, inspect KPI cards, and view rendered audit reports in your browser:
+
+```bash
+python gui.py --port 8080
+```
+
+Then open `http://localhost:8080` in your browser.
+
+---
+
+## 🚀 CLI Execution Commands
+
+### Full Pipeline & Report Export
 ```bash
 # Run full pipeline end-to-end (Phase 0 -> Phase 1 -> ... -> Phase 9)
 python pipeline.py --source . --phase all
 
+# Output full pipeline results directly to JSON
+python pipeline.py --source . --phase all --output full_pipeline_results.json
+
+# Generate final audit report in Markdown and save to file
+python pipeline.py --source . --phase 9 --format markdown --output final_report.md
+```
+
+### Individual Phase Execution
+```bash
 # Run Phase 0 only: Repository structural inventory
 python pipeline.py --source . --phase 0
 
 # Run Phase 1 only: Project reconstruction
 python pipeline.py --source . --phase 1
 
-# Run Phase 2 only: Requirements extraction
+# Run Phase 2 only: Requirements extraction & threat modeling
 python pipeline.py --source . --phase 2
 
 # Run Phase 3A only: Red Team attack surface & vulnerability discovery
@@ -129,16 +179,45 @@ python pipeline.py --source . --phase 8
 
 # Run Phase 9 only: Final report generator (Markdown format)
 python pipeline.py --source . --phase 9 --format markdown
+```
 
-# Output results directly to a JSON or Markdown file
-python pipeline.py --source . --phase 9 --format markdown --output final_report.md
-python pipeline.py --source . --phase all --output full_pipeline_results.json
+---
+
+## 📂 Repository Structure
+
+```text
+SentinelGuard/
+├── pipeline.py                  # CLI entry point & deterministic DAG orchestrator
+├── gui.py                       # Local HTTP server & REST API (/api/run, /api/health)
+├── frontend/                    # Zero-dependency Web UI (HTML5, CSS3, Vanilla JS)
+├── src/
+│   ├── phase0/ingestion.py      # Safe ZIP/Git/directory ingestion & inventory
+│   ├── phase1/reconstruction.py # Route, entry-point & trust boundary modeling
+│   ├── phase2/                  # Requirements extraction & STRIDE assessment
+│   ├── phase3a/red_team.py      # 18 AST & regex security vulnerability checkers
+│   ├── phase4a/blue_team.py     # Root-cause diagnosis & remediation blueprints
+│   ├── phase5a/retest.py        # Static verification of defensive controls
+│   ├── phase6/code_smells.py    # 18 Python AST maintainability & complexity rules
+│   ├── phase7/cross_domain.py   # Security ↔ Maintainability ↔ Performance correlation
+│   ├── phase8/recommendations.py  # Severity- and confidence-weighted prioritization
+│   └── phase9/report.py         # Epistemic Markdown & JSON report compiler
+└── tests/                       # Automated unittest suite (378 unit tests)
 ```
 
 ---
 
 ## 🧪 Testing
 
+Run the full automated test suite using Python's built-in `unittest` runner:
+
 ```bash
 python -m unittest discover tests
 ```
+
+---
+
+## 📌 Scope & Current Boundaries
+
+* **Static Analysis Only:** SentinelGuard analyzes source code via AST parsing and lexical rules without executing target applications or running live exploit payloads.
+* **Language Coverage:** Repository ingestion supports multi-language projects, while deep AST code-smell analysis (Phase 6) currently targets Python (`.py`) files.
+* **Local Web Server:** `gui.py` runs on Python's single-threaded `http.server` and is designed for local workstation or CI/CD usage rather than multi-tenant public hosting.
